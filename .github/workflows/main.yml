@@ -19,24 +19,23 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Setup Flutter
+    - name: Setup Flutter 3.16.9
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.24.x'
+        flutter-version: '3.16.9'
         channel: 'stable'
         cache: true
 
-    - name: Fix Gradle Config & local.properties
+    - name: Fix Compatibility & Dependencies
       working-directory: ./kirana_store_app
       run: |
         echo "flutter.sdk=$FLUTTER_ROOT" > android/local.properties
-        # Purane apply script ko safe injection provide karna
-        if [ -f android/app/build.gradle ]; then
-          sed -i 's/apply from: "\$flutterRoot\/packages\/flutter_tools\/gradle\/flutter.gradle"/apply plugin: "com.android.application"\napply plugin: "kotlin-android"\napply plugin: "dev.flutter.flutter-gradle-plugin"/g' android/app/build.gradle || true
-        fi
+        # image_picker version ko Dart 3.2.6 ke sath compatible banana
+        sed -i 's/image_picker:.*/image_picker: ^1.0.8/g' pubspec.yaml
+        flutter clean
         flutter pub get
 
-    - name: Build APK
+    - name: Build Release APK
       working-directory: ./kirana_store_app
       run: flutter build apk --release --no-tree-shake-icons
 
