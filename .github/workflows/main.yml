@@ -19,23 +19,19 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Setup Flutter 3.16.9
+    - name: Setup Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.16.9'
         channel: 'stable'
         cache: true
 
-    - name: Fix Compatibility & Dependencies
+    - name: Setup Environment
       working-directory: ./kirana_store_app
       run: |
         echo "flutter.sdk=$FLUTTER_ROOT" > android/local.properties
-        # image_picker version ko Dart 3.2.6 ke sath compatible banana
-        sed -i 's/image_picker:.*/image_picker: ^1.0.8/g' pubspec.yaml
-        flutter clean
         flutter pub get
 
-    - name: Build Release APK
+    - name: Build APK
       working-directory: ./kirana_store_app
       run: flutter build apk --release --no-tree-shake-icons
 
