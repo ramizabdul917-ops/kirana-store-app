@@ -25,15 +25,18 @@ jobs:
         channel: 'stable'
         cache: true
 
-    - name: Prepare Environment
+    - name: Upgrade Gradle & Prepare
       working-directory: ./kirana_store_app
       run: |
         echo "flutter.sdk=$FLUTTER_ROOT" > android/local.properties
+        # Gradle version ko 8.14 par upgrade karna
+        sed -i 's/gradle-.*-all.zip/gradle-8.14-all.zip/g' android/gradle/wrapper/gradle-wrapper.properties || true
+        sed -i 's/gradle-.*-bin.zip/gradle-8.14-bin.zip/g' android/gradle/wrapper/gradle-wrapper.properties || true
         flutter pub get
 
-    - name: Build APK (Bypass Version Checks)
+    - name: Build APK
       working-directory: ./kirana_store_app
-      run: flutter build apk --release --no-tree-shake-icons --android-skip-build-dependency-validation
+      run: flutter build apk --release --no-tree-shake-icons
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
