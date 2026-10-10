@@ -22,15 +22,14 @@ jobs:
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
       with:
+        flutter-version: '3.16.9'
         channel: 'stable'
         cache: true
 
-    - name: Configure Flutter and Create local.properties
+    - name: Create local.properties & Setup
       working-directory: ./kirana_store_app
       run: |
-        flutter config --no-analytics
         echo "flutter.sdk=$FLUTTER_ROOT" > android/local.properties
-        flutter clean
         flutter pub get
 
     - name: Build APK
