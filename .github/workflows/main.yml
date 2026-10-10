@@ -22,14 +22,18 @@ jobs:
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.16.9'
+        flutter-version: '3.24.x'
         channel: 'stable'
         cache: true
 
-    - name: Create local.properties & Setup
+    - name: Fix Gradle Config & local.properties
       working-directory: ./kirana_store_app
       run: |
         echo "flutter.sdk=$FLUTTER_ROOT" > android/local.properties
+        # Purane apply script ko safe injection provide karna
+        if [ -f android/app/build.gradle ]; then
+          sed -i 's/apply from: "\$flutterRoot\/packages\/flutter_tools\/gradle\/flutter.gradle"/apply plugin: "com.android.application"\napply plugin: "kotlin-android"\napply plugin: "dev.flutter.flutter-gradle-plugin"/g' android/app/build.gradle || true
+        fi
         flutter pub get
 
     - name: Build APK
